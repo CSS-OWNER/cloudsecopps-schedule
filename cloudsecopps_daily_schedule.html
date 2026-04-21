@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudSecOps Daily Schedule</title>
+<style>
+  :root {
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #555;
+    --color-text-tertiary: #888;
+    --color-background-primary: #fff;
+    --color-background-secondary: #f5f5f3;
+    --color-border-tertiary: rgba(0,0,0,0.12);
+    --color-border-secondary: rgba(0,0,0,0.2);
+    --color-border-primary: rgba(0,0,0,0.35);
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-text-primary: #f0ede8;
+      --color-text-secondary: #aaa;
+      --color-text-tertiary: #777;
+      --color-background-primary: #1e1e1c;
+      --color-background-secondary: #2a2a28;
+      --color-border-tertiary: rgba(255,255,255,0.1);
+      --color-border-secondary: rgba(255,255,255,0.2);
+      --color-border-primary: rgba(255,255,255,0.35);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); background: var(--color-background-secondary); color: var(--color-text-primary); padding: 2rem; min-height: 100vh; }
+  h1 { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: var(--color-text-tertiary); margin-bottom: 1.5rem; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tab { padding: 6px 16px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); font-size: 13px; cursor: pointer; background: transparent; color: var(--color-text-secondary); font-family: var(--font-sans); }
+  .tab.active { background: var(--color-background-primary); color: var(--color-text-primary); font-weight: 500; border-color: var(--color-border-primary); }
+  .section-title { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-tertiary); margin-bottom: 10px; margin-top: 1.5rem; }
+  .section-title:first-of-type { margin-top: 0; }
+  .block { display: flex; gap: 12px; align-items: flex-start; padding: 10px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); margin-bottom: 8px; }
+  .time { font-size: 12px; color: var(--color-text-tertiary); min-width: 80px; padding-top: 2px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+  .block-body { flex: 1; }
+  .block-label { font-size: 14px; color: var(--color-text-primary); font-weight: 500; line-height: 1.4; }
+  .block-desc { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; line-height: 1.5; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; margin-left: 8px; font-weight: 500; vertical-align: middle; }
+  .badge-you { background: #E6F1FB; color: #0C447C; }
+  .badge-dev { background: #EAF3DE; color: #27500A; }
+  .badge-both { background: #EEEDFE; color: #3C3489; }
+  .milestone-bar { background: #FAEEDA; border: 0.5px solid #EF9F27; border-radius: var(--border-radius-md); padding: 10px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+  .milestone-bar .star { font-size: 16px; }
+  .milestone-bar .ml { font-size: 13px; font-weight: 500; color: #633806; }
+  .milestone-bar .ml-sub { font-size: 12px; color: #854F0B; margin-top: 1px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .wk-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; margin-bottom: 12px; }
+  .wk-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .wk-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+  .wk-dates { font-size: 12px; color: var(--color-text-tertiary); }
+  .task-row { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; border-top: 0.5px solid var(--color-border-tertiary); }
+  .task-label { font-size: 13px; color: var(--color-text-primary); flex: 1; }
+  .task-who { font-size: 11px; color: var(--color-text-tertiary); min-width: 60px; text-align: right; padding-top: 1px; }
+  .legend { display: flex; gap: 14px; margin-bottom: 1.2rem; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .container { max-width: 720px; margin: 0 auto; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>CloudSecOps — Master Schedule</h1>
+  <p class="subtitle">Daily template + 20-week launch plan · For EA use</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="show('daily', this)">Daily template</button>
+    <button class="tab" onclick="show('weekly', this)">Week-by-week plan</button>
+  </div>
+
+  <div id="daily" class="panel active">
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div>Deep focus</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div>Admin / comms</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#BA7517"></div>Strategic / review</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#888780"></div>Break</div>
+    </div>
+
+    <div class="section-title">Morning — deep work</div>
+    <div class="block"><div class="time">10:00 – 10:15</div><div class="dot" style="background:#1D9E75"></div><div class="block-body"><div class="block-label">Day startup ritual</div><div class="block-desc">Review EA's calendar brief, confirm today's priorities, check overnight Dev messages</div></div></div>
+    <div class="block"><div class="time">10:15 – 12:00</div><div class="dot" style="background:#378ADD"></div><div class="block-body"><div class="block-label">Deep focus block #1 <span class="badge badge-both">You + Dev</span></div><div class="block-desc">Primary technical or strategic task for the week (see weekly plan). No calls, no Slack.</div></div></div>
+
+    <div class="section-title">Midday break</div>
+    <div class="block"><div class="time">12:00 – 1:00</div><div class="dot" style="background:#888780"></div><div class="block-body"><div class="block-label">Lunch — full stop</div><div class="block-desc">Away from screen. Non-negotiable for sustained energy.</div></div></div>
+
+    <div class="section-title">Afternoon — comms + secondary focus</div>
+    <div class="block"><div class="time">1:00 – 1:30</div><div class="dot" style="background:#1D9E75"></div><div class="block-body"><div class="block-label">Comms window</div><div class="block-desc">Reply to Dev, answer emails, LinkedIn DMs, prospect follow-ups. Batched — not spread through the day.</div></div></div>
+    <div class="block"><div class="time">1:30 – 3:30</div><div class="dot" style="background:#378ADD"></div><div class="block-body"><div class="block-label">Deep focus block #2 <span class="badge badge-you">You</span></div><div class="block-desc">Business development, sales tasks, deliverables, content creation — your solo work for the week.</div></div></div>
+    <div class="block"><div class="time">3:30 – 3:45</div><div class="dot" style="background:#888780"></div><div class="block-body"><div class="block-label">Reset break</div><div class="block-desc">Walk, water, away from screens. Protects focus for the final push.</div></div></div>
+    <div class="block"><div class="time">3:45 – 5:30</div><div class="dot" style="background:#378ADD"></div><div class="block-body"><div class="block-label">Deep focus block #3</div><div class="block-desc">Overflow from blocks 1–2, client work, pipeline QA, or getting ahead on next week's tasks.</div></div></div>
+
+    <div class="section-title">Evening break</div>
+    <div class="block"><div class="time">6:00 – 7:00</div><div class="dot" style="background:#888780"></div><div class="block-body"><div class="block-label">Dinner — full stop</div><div class="block-desc">Hard boundary. Recharges the second wind.</div></div></div>
+
+    <div class="section-title">Evening — strategy + wind down</div>
+    <div class="block"><div class="time">7:00 – 8:00</div><div class="dot" style="background:#BA7517"></div><div class="block-body"><div class="block-label">Review + plan tomorrow</div><div class="block-desc">Update checklist, note blockers, prep EA's morning brief for next day. Max 30 min of light work.</div></div></div>
+    <div class="block"><div class="time">8:00 – 8:15</div><div class="dot" style="background:#1D9E75"></div><div class="block-body"><div class="block-label">Day shutdown</div><div class="block-desc">Close all tabs, send EA tomorrow's task list, done. No work after this.</div></div></div>
+  </div>
+
+  <div id="weekly" class="panel">
+    <div id="wk-cards"></div>
+  </div>
+</div>
+
+<script>
+const weeks = [
+  { wk: "Wk 1", dates: "Apr 21–25", milestone: null, tasks: [
+    { label: "Set up AWS S3 bucket + Supabase project", who: "You + Dev" },
+    { label: "Run config/schema.sql in Supabase", who: "You + Dev" },
+    { label: "Load OTX and NIST threat intel into ChromaDB", who: "You + Dev" },
+    { label: "Deploy FastAPI backend locally, confirm /health", who: "You + Dev" },
+    { label: "Open dashboard.html and verify mock data loads", who: "You + Dev" },
+  ]},
+  { wk: "Wk 2", dates: "Apr 28–May 2", milestone: null, tasks: [
+    { label: "Connect first real log source — AWS CloudTrail", who: "Dev" },
+    { label: "Run test_pipeline.py against sandbox logs", who: "Dev" },
+    { label: "Tune analysis prompt until output is plain-English", who: "Dev" },
+    { label: "Set up SendGrid, send yourself a test critical alert", who: "Dev" },
+    { label: "Stand up scheduler — run pipeline every hour", who: "Dev" },
+  ]},
+  { wk: "Wk 3", dates: "May 5–9", milestone: null, tasks: [
+    { label: "Add Microsoft 365 connector, test with your M365", who: "You + Dev" },
+    { label: "Set up S3 lifecycle rule — auto-delete raw logs", who: "You + Dev" },
+    { label: "Create client onboarding guide (1-page PDF) + NDA", who: "You + Dev" },
+    { label: "Draft weekly email template (Canva or Notion)", who: "You + Dev" },
+    { label: "QA full cycle: collect → store → analyze → alert", who: "You + Dev" },
+  ]},
+  { wk: "Wk 4", dates: "May 12–15", milestone: "Pipeline ready ★", tasks: [
+    { label: "Full pipeline stress test — 7 days of logs", who: "You" },
+    { label: "Confirm alert badge counts, filter buttons, acknowledge flow", who: "You" },
+    { label: "Fix any bugs found in QA week", who: "You" },
+    { label: "Brief EA on pilot outreach strategy and prospect list", who: "You" },
+  ]},
+  { wk: "Wk 5", dates: "May 18–22", milestone: null, tasks: [
+    { label: "Send 20 LinkedIn DMs to local founders, law firms", who: "You" },
+    { label: "Offer free 30-day security audit to top 5 prospects", who: "You" },
+    { label: "Schedule discovery calls", who: "You" },
+    { label: "Finalize service agreement (LegalZoom) + NDA", who: "You" },
+  ]},
+  { wk: "Wk 6", dates: "May 25–29", milestone: null, tasks: [
+    { label: "Onboard Pilot Client #1 — collect IAM role + log source", who: "You + Dev" },
+    { label: "Connect their CloudTrail or M365, confirm logs flowing", who: "You + Dev" },
+    { label: "Send their first weekly email report manually", who: "You + Dev" },
+    { label: "Follow up with remaining prospects from Wk 5", who: "You + Dev" },
+  ]},
+  { wk: "Wk 7", dates: "Jun 1–5", milestone: null, tasks: [
+    { label: "Onboard Pilot Client #2", who: "You + Dev" },
+    { label: "Run daily pipeline checks — document every finding", who: "You + Dev" },
+    { label: "Refine weekly email template based on real client data", who: "You + Dev" },
+    { label: "Begin drafting monthly PDF report template", who: "You + Dev" },
+  ]},
+  { wk: "Wk 8", dates: "Jun 8–12", milestone: null, tasks: [
+    { label: "Onboard Pilot Client #3", who: "You" },
+    { label: "Deliver 30-day summary report to Client #1", who: "You" },
+    { label: "Present findings in person or video call", who: "You" },
+    { label: "Ask Client #1: convert to paid ($1,500/mo)?", who: "You" },
+  ]},
+  { wk: "Wk 9", dates: "Jun 15–19", milestone: "3 paying clients ★", tasks: [
+    { label: "Close Client #1 to paid — set up Stripe recurring", who: "You" },
+    { label: "Deliver 30-day report to Client #2, run close meeting", who: "You" },
+    { label: "Start collecting written testimonials", who: "You" },
+    { label: "LinkedIn post: share a sanitized threat insight", who: "You" },
+  ]},
+  { wk: "Wk 10", dates: "Jun 22–27", milestone: null, tasks: [
+    { label: "Close Clients #2 and #3 to paid or extend", who: "You" },
+    { label: "Write 2 case studies (1 page each, anonymized)", who: "You" },
+    { label: "Identify 3 referral opportunities from pilot clients", who: "You" },
+    { label: "Review pipeline costs: AI spend, S3, Supabase margins", who: "You" },
+  ]},
+  { wk: "Wk 11", dates: "Jun 29–Jul 3", milestone: null, tasks: [
+    { label: "Deploy API to Railway or Render (cloud hosting)", who: "Dev + You" },
+    { label: "Update dashboard API URL to live deployment", who: "Dev + You" },
+    { label: "Set up custom domain (app.cloudsecops.io)", who: "Dev + You" },
+    { label: "Begin outbound: 30 LinkedIn messages using case study", who: "Dev + You" },
+  ]},
+  { wk: "Wk 12", dates: "Jul 6–10", milestone: null, tasks: [
+    { label: "Reach out to 5 IT managed service providers (MSPs)", who: "You" },
+    { label: "Pitch: security layer add-on to their existing clients", who: "You" },
+    { label: "Schedule 3+ discovery calls from outbound + referrals", who: "You" },
+    { label: "Publish first LinkedIn article: '5 threats we blocked'", who: "You" },
+  ]},
+  { wk: "Wk 13", dates: "Jul 13–17", milestone: null, tasks: [
+    { label: "Run discovery calls, follow up same day", who: "You" },
+    { label: "Onboard clients #4 and #5", who: "You" },
+    { label: "Consider part-time sales hire or commission-based rep", who: "You" },
+    { label: "Set up Stripe billing for all paid clients — automate", who: "You" },
+  ]},
+  { wk: "Wk 14", dates: "Jul 20–24", milestone: null, tasks: [
+    { label: "Onboard clients #6 and #7", who: "You + Sales" },
+    { label: "Send weekly summaries to all clients — automate", who: "You + Sales" },
+    { label: "Build referral program: $500 credit per referred client", who: "You + Sales" },
+    { label: "Request Google reviews or LinkedIn recommendations", who: "You + Sales" },
+  ]},
+  { wk: "Wk 15", dates: "Jul 27–31", milestone: null, tasks: [
+    { label: "Onboard clients #8 and #9", who: "Dev + You" },
+    { label: "Upgrade ChromaDB to Pinecone (cloud) if >5 clients", who: "Dev + You" },
+    { label: "Review AI costs at scale — optimize batch sizes", who: "Dev + You" },
+    { label: "Begin targeting healthcare and legal verticals", who: "Dev + You" },
+  ]},
+  { wk: "Wk 16", dates: "Aug 3–7", milestone: "10 clients ★", tasks: [
+    { label: "Close client #10", who: "You" },
+    { label: "Full financial review: MRR, churn, cost per client", who: "You" },
+    { label: "Identify top 2–3 client pain points for product roadmap", who: "You" },
+    { label: "Decide: hire full-time dev or continue contracting?", who: "You" },
+  ]},
+  { wk: "Wk 17", dates: "Aug 10–14", milestone: null, tasks: [
+    { label: "Begin SOC2 Type II readiness assessment (Vanta)", who: "You + Dev" },
+    { label: "Document all internal security controls and processes", who: "You + Dev" },
+    { label: "Hire or contract compliance advisor if pursuing HIPAA", who: "You + Dev" },
+    { label: "Expand M365 connector to capture SharePoint and Teams", who: "You + Dev" },
+  ]},
+  { wk: "Wk 18", dates: "Aug 17–21", milestone: null, tasks: [
+    { label: "Launch Growth tier ($3,500/mo) with dedicated analyst", who: "You + Sales" },
+    { label: "Target 3 upsell conversations with Starter clients", who: "You + Sales" },
+    { label: "Begin enterprise outreach to healthcare systems", who: "You + Sales" },
+    { label: "Set up HubSpot or Pipedrive CRM", who: "You + Sales" },
+  ]},
+  { wk: "Wk 19", dates: "Aug 24–28", milestone: null, tasks: [
+    { label: "Prepare investor deck if pursuing seed funding", who: "You" },
+    { label: "Key metrics to highlight: MRR, churn, margin, growth", who: "You" },
+    { label: "Explore channel partnerships with cyber insurance brokers", who: "You" },
+    { label: "Publish case study #3 — healthcare or legal vertical", who: "You" },
+  ]},
+  { wk: "Wk 20", dates: "Sep 1–5", milestone: "5-month mark ★", tasks: [
+    { label: "Full 5-month retrospective — what worked, what didn't", who: "You" },
+    { label: "Set 6-month targets: clients, MRR, team, product", who: "You" },
+    { label: "Brief EA on updated schedule for Q4 2026", who: "You" },
+    { label: "Celebrate — you built a real cybersecurity business", who: "You" },
+  ]},
+];
+
+function show(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+const container = document.getElementById('wk-cards');
+weeks.forEach(w => {
+  let html = `<div class="wk-card">`;
+  if (w.milestone) {
+    html += `<div class="milestone-bar" style="margin-bottom:10px"><span class="star">★</span><div><div class="ml">Milestone: ${w.milestone}</div><div class="ml-sub">${w.wk} · ${w.dates}</div></div></div>`;
+  }
+  html += `<div class="wk-header"><span class="wk-title">${w.wk}</span><span class="wk-dates">${w.dates}</span></div>`;
+  w.tasks.forEach(t => {
+    html += `<div class="task-row"><div class="task-label">${t.label}</div><div class="task-who">${t.who}</div></div>`;
+  });
+  html += `</div>`;
+  container.innerHTML += html;
+});
+</script>
+</body>
+</html>
